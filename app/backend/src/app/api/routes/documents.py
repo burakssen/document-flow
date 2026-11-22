@@ -2,8 +2,9 @@ import logging
 from uuid import UUID, uuid4
 
 from botocore.exceptions import BotoCoreError, ClientError
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
+from app.core.auth import get_current_user
 from app.core.config import get_settings
 from app.schemas.document import (
     DocumentUploadCompleteResponse,
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(
     prefix="/documents",
     tags=["Documents"],
+    dependencies=[Depends(get_current_user)],
 )
 
 
