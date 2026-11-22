@@ -1,0 +1,40 @@
+
+# Root pre-commit configuration for document-flow.
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.3
+    hooks:
+      - id: ruff
+        name: ruff (backend)
+        args: [--fix]
+        files: ^app/backend/
+
+      - id: ruff-format
+        name: ruff-format (backend)
+        files: ^app/backend/
+
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier (frontend)
+        entry: app/frontend/node_modules/.bin/prettier --write
+        language: system
+        files: ^app/frontend/.*\.(css|html|js|jsx|json|jsonc|md|mdx|mjs|ts|tsx|yaml|yml)$
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-toml
+
+      - id: check-json
+        exclude: ^app/frontend/tsconfig.*\.json$
+
+      - id: check-yaml
+
+      - id: end-of-file-fixer
+
+      - id: trailing-whitespace
+
+      - id: no-commit-to-branch
+        args: [--branch, main]

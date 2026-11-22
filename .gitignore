@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build / caches
+dist/
+build/
+*.pyc
+__pycache__/
+.ruff_cache/
+.turbo/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Environment
+.env
+**/.env
+**/.venv/
+**/node_modules/

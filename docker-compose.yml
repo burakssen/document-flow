@@ -1,0 +1,35 @@
+services:
+  floci:
+    image: floci/floci:latest
+    ports:
+      - "4566:4566"
+      # Required only for ElastiCache / RDS proxy connections:
+      - "6379-6399:6379-6399" # ElastiCache proxy ports
+      - "7001-7099:7001-7099" # RDS proxy ports
+    volumes:
+      # Required for Lambda, RDS, ElastiCache, OpenSearch, MSK, ECS, etc.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Optional: persist state across restarts
+      - floci-data:/app/data
+      # Optional: initialization hooks
+      # - ./init/boot.d:/etc/floci/init/boot.d:ro
+      # - ./init/start.d:/etc/floci/init/start.d:ro
+      # - ./init/ready.d:/etc/floci/init/ready.d:ro
+    environment:
+      # CRITICAL: Ensures URLs returned to other containers use the service name
+      FLOCI_HOSTNAME: floci
+      # Optional: enable persistence
+      FLOCI_STORAGE_MODE: persistent
+      FLOCI_STORAGE_PERSISTENT_PATH: /app/data
+      # Optional: set the Docker network for spawned containers
+      # FLOCI_SERVICES_DOCKER_NETWORK: myproject_default
+      # Optional: only if the Docker socket is root-only
+      # FLOCI_RUN_AS_ROOT: "true"
+      # Optional: configure default region and account ID
+      FLOCI_DEFAULT_REGION: eu-central-1
+      # FLOCI_DEFAULT_ACCOUNT_ID: "000000000000"
+    # Optional: ensure the container restarts automatically
+    restart: unless-stopped
+
+volumes:
+  floci-data:
