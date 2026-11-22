@@ -1,4 +1,5 @@
 import { API_URL } from "@/lib/config"
+import { getIdToken } from "@/features/auth/auth-api"
 
 export class UploadApiError extends Error {
   public readonly status?: number
@@ -92,6 +93,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
+function authHeaders(): Record<string, string> {
+  const idToken = getIdToken()
+  return idToken ? { Authorization: `Bearer ${idToken}` } : {}
+}
+
 async function initializeUpload(
   file: File,
   signal: AbortSignal
@@ -100,6 +106,7 @@ async function initializeUpload(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...authHeaders(),
     },
     body: JSON.stringify({
       filename: file.name,
@@ -260,6 +267,7 @@ async function confirmUpload(
 
   const response = await apiRequest(url, {
     method: "POST",
+    headers: authHeaders(),
     signal,
   })
 

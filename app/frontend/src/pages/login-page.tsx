@@ -1,5 +1,5 @@
 import { useState, type SubmitEvent } from "react"
-import { Link } from "react-router"
+import { Link, useLocation, useNavigate } from "react-router"
 import {
   ArrowRight,
   Check,
@@ -19,15 +19,50 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useAuth } from "@/features/auth/auth-context"
 
 export function LoginPage() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { signIn, isLoading } = useAuth()
+
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+  const [email, setEmail] = useState(
+    () => (location.state as { email?: string } | null)?.email ?? ""
+  )
+  const [password, setPassword] = useState("")
+
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    // Connect your authentication API here.
+    setError(null)
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if (!email) {
+      setError("Please enter an email address.")
+      return
+    }
+
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.")
+      return
+    }
+
+    if (!password) {
+      setError("Please enter your password.")
+      return
+    }
+
+    try {
+      await signIn(email, password)
+      navigate("/documents/upload", { replace: true })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to sign in.")
+    }
   }
 
   return (
@@ -45,6 +80,12 @@ export function LoginPage() {
             </p>
           </div>
 
+          {error && (
+            <div className="mb-4 rounded-none bg-destructive p-3 text-sm text-white">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div className="space-y-2">
@@ -55,10 +96,13 @@ export function LoginPage() {
 
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="you@example.com"
                   autoComplete="email"
                   required
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
                   className="h-11 rounded-none pl-10"
                 />
               </div>
@@ -82,10 +126,13 @@ export function LoginPage() {
 
                 <Input
                   id="password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   autoComplete="current-password"
                   required
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
                   className="h-11 rounded-none pl-10 pr-10"
                 />
 
@@ -124,8 +171,12 @@ export function LoginPage() {
             </div>
 
             {/* Submit */}
-            <Button type="submit" className="h-11 w-full rounded-none">
-              Sign in
+            <Button
+              type="submit"
+              className="h-11 w-full rounded-none"
+              disabled={isLoading}
+            >
+              {isLoading ? "Signing in..." : "Sign in"}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </form>

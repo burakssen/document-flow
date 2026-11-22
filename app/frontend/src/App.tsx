@@ -1,10 +1,13 @@
 import { AppRouter } from "@/app/router"
 import { ThemeProvider } from "@/components/theme-provider"
+import { AuthProvider } from "@/features/auth/auth-context"
 
 export function App() {
   return (
     <ThemeProvider defaultTheme="dark">
-      <AppRouter />
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
     </ThemeProvider>
   )
 }

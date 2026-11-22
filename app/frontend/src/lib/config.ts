@@ -27,3 +27,11 @@ export const UPLOAD_TIMEOUT_MS = positiveIntegerOrDefault(
 
 export const ACCEPTED_FILE_TYPES =
   import.meta.env.VITE_ALLOWED_FILE_TYPES?.trim() || ".pdf,.doc,.docx,.txt"
+
+export const COGNITO_USER_POOL_ID =
+  import.meta.env.VITE_COGNITO_USER_POOL_ID ?? ""
+export const COGNITO_CLIENT_ID = import.meta.env.VITE_COGNITO_CLIENT_ID ?? ""
+export const COGNITO_REGION =
+  import.meta.env.VITE_COGNITO_REGION ?? "eu-central-1"
+export const COGNITO_ENDPOINT =
+  import.meta.env.VITE_COGNITO_ENDPOINT ?? undefined
